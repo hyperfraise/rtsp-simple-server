@@ -7,7 +7,7 @@ import (
 	"os"
 	"regexp"
 	"time"
-
+	"strconv"
 	"github.com/aler9/gortsplib"
 	"gopkg.in/yaml.v2"
 )
@@ -110,7 +110,13 @@ func loadConf(fpath string, stdin io.Reader) (*conf, error) {
 	}
 
 	if conf.RtspPort == 0 {
-		conf.RtspPort = 8554
+		env_port, is_variable_defined := os.LookupEnv("RTSP_SERVER_PORT")
+		if is_variable_defined {
+				int_env_port, _ := strconv.Atoi(env_port)
+				conf.RtspPort = int_env_port
+		} else {
+				conf.RtspPort = 8554
+		}
 	}
 	if conf.RtpPort == 0 {
 		conf.RtpPort = 8000
